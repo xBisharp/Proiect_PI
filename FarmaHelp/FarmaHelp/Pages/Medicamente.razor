@@ -1,0 +1,54 @@
+﻿@page "/medicamente"
+@using Blazorise.DataGrid
+@using FarmaHelp.Data
+@using FarmaHelp.Services
+@inject NavigationManager NavManager;
+
+
+<DataGrid TItem="Medicine"
+          Data="@medicineList"
+          @bind-SelectedRow="@selectedMedicine"
+          EditMode="editMode"
+          Editable
+          PageSize="5"
+          Filterable
+          Bordered
+          Responsive
+          ShowPager>
+    <DataGridCommandColumn>
+
+    </DataGridCommandColumn>
+    <DataGridCheckColumn Caption="selectat" Field="@nameof(Medicine.isInCart)" Editable>
+        <DisplayTemplate>
+            <Check TValue="bool" @bind-Checked="@context.isInCart" />
+        </DisplayTemplate>
+    </DataGridCheckColumn>
+    <DataGridColumn Field="@nameof(Medicine.name)" Caption="Nume medicament" Editable />
+    <DataGridColumn Field="@nameof(Medicine.pret)" Caption="Pret" Editable />
+    <DataGridColumn Field="@nameof(Medicine.id)" Caption="#" Sortable="false" />
+</DataGrid>
+<Button Color="Color.Primary" @onclick="AddToCart">Adauga in cos</Button>
+
+@code {
+    private List<Medicine> medicineList;
+    private Medicine selectedMedicine;
+    private DataGridEditMode editMode = DataGridEditMode.Popup;
+
+    protected override async Task OnInitializedAsync()
+    {
+        medicineList = DataAccessService.getMedicines();
+        await base.OnInitializedAsync();
+    }
+
+    private void AddToCart(){
+        foreach(Medicine i in medicineList)
+            if(i.isInCart == true){
+                DataAccessService.insertCos(i.id,1);
+            }
+        NavManager.NavigateTo("/cos");
+    }
+}
+
+@code {
+
+}

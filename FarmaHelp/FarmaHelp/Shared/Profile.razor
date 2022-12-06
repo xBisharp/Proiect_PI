@@ -1,0 +1,42 @@
+﻿@page "/profile"
+@using FarmaHelp.Services
+
+<Card>
+    <CardBody>
+        <FocusTrap Active=true>
+            <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Name</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Autofocus Disabled @bind-Text="@auth.user.Name" />
+                </FieldBody>
+            </Field>
+            <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop"> Email</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Autofocus Disabled @bind-Text="@auth.user.Email"/>
+                </FieldBody>
+            </Field>
+            <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Phone Number</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Autofocus Disabled @bind-Text="@auth.user.PhoneNumber"/>
+                </FieldBody>
+            </Field>
+            </FocusTrap>
+    </CardBody>
+</Card>
+
+
+
+@code {
+    [Inject]
+    private Auth auth{ get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        if (auth == null)
+            auth = new Auth();
+        if (auth.user == null)
+            auth.user = new Data.User();
+        return base.OnInitializedAsync();
+    }
+}

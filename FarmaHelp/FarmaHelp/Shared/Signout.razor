@@ -1,0 +1,16 @@
+﻿@page "/signout"
+@using FarmaHelp.Data
+@using FarmaHelp.Services
+@inject NavigationManager NavManager;
+@inject Auth auth;
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        auth.isAuthenticated = false;
+        NavManager.NavigateTo("/", forceLoad: true);
+        return base.OnInitializedAsync();
+
+    }
+  
+}

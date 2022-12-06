@@ -1,0 +1,66 @@
+﻿@page "/login"
+@using FarmaHelp.Data
+@using FarmaHelp.Services
+@inject NavigationManager NavManager;
+@inject Auth auth;
+<Div Padding="Padding.Is4.OnX" Background="Background.Transparent" Height="Height.Is100" Display=Display.Flex Class="justify-content-center">
+    <Div Width=Width.Is75 style="display: grid;grid-template-rows: auto 1fr 60px;">
+        <Fields>
+            <Field>
+                <FieldLabel>email</FieldLabel>
+                <TextEdit @bind-Text="@email">
+                    <FieldHelp>Include country and area prefixes</FieldHelp>
+                </TextEdit>
+            </Field>
+            <Field>
+                <FieldLabel>Password</FieldLabel>
+                <TextEdit @bind-Text="@password" Role="TextRole.Password">
+                    
+                </TextEdit >
+            </Field>
+        </Fields>
+    </Div>
+</Div>
+
+<Div style="display: flex;justify-content: center;gap: 10px;margin-top: 20px;">
+
+    <Button Color="Color.Primary" onclick="@LoginEvent">Login</Button>
+<Button Color="Color.Primary" onclick="@Cancel">Cancel</Button>
+</Div>
+
+@code {
+    private string email;
+    private string password;
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private void LoginEvent(){
+
+        List<User> users = DataAccessService.getUsers();
+        bool found= false;
+
+        foreach(User i in users){
+            if (i.Email == email) { found = true; 
+                auth.user = i;
+
+            }
+        }
+        if (found)
+        {
+            auth.isAuthenticated = true;
+            NavManager.NavigateTo("/", forceLoad: true);
+        }
+      
+
+
+        
+
+    }
+
+    public void Cancel()
+    {
+        NavManager.NavigateTo("/");
+    }
+}

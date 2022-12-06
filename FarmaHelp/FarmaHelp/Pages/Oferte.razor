@@ -1,0 +1,20 @@
+﻿@page "/oferte"
+@using Blazorise.DataGrid
+@using FarmaHelp.Data
+@using FarmaHelp.Services
+@inject NavigationManager NavManager;
+@inject IJSRuntime JS
+
+
+<div id="chart"></div>
+<div id="question"><h1></h1></div>
+
+@code {
+   
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("main");
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+}

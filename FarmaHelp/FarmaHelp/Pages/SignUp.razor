@@ -1,0 +1,70 @@
+﻿@page "/signup";
+@using FarmaHelp.Data;
+@using FarmaHelp.Services
+@inject NavigationManager NavManager;
+@inject Auth auth;
+<Card>
+    <CardBody>
+        <FocusTrap Active=true>
+            <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Nume</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Autofocus @bind-Text="user.Name" />
+                </FieldBody>
+            </Field>
+                        <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Prenume</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Autofocus @bind-Text="user.PreName" />
+                </FieldBody>
+            </Field>
+            <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Email</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit @bind-Text="user.Email" />
+                </FieldBody>
+            </Field>
+             <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Phone Number</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit @bind-Text="user.PhoneNumber" />
+                </FieldBody>
+            </Field>
+            <Field Horizontal>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Password</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Role="TextRole.Password" @bind-Text="user.Password" />
+                </FieldBody>
+            </Field>
+            <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Confirm Password</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Role="TextRole.Password" />
+                    </FieldBody>
+            </Field>
+        </FocusTrap>
+        <Div style="display: flex;justify-content: center;gap: 10px;margin-top: 20px;">
+        <Button Color="Color.Primary" onclick="@Clicked">SignUp</Button>
+        <Button Color="Color.Primary" onclick="@Cancel">Cancel</Button>
+        </Div>
+    </CardBody>
+</Card>
+
+
+@code {
+
+    bool focusTrapActive = false;
+    private User user { get; set; } = new();
+    public void Cancel(){
+
+        NavManager.NavigateTo("/");
+
+    }
+
+    public void Clicked(){
+        auth.isAuthenticated = true;
+        auth.user = user;
+        DataAccessService.insertUser(user.Name,user.PreName,user.Password,user.esteAdmin,user.PhoneNumber,user.Email);
+        NavManager.NavigateTo("/", forceLoad: true);
+    }
+}

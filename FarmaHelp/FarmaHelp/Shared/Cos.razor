@@ -1,0 +1,89 @@
+﻿@page "/cos"
+@using Aspose.Pdf
+@using FarmaHelp.Data
+@using Blazorise;
+@using Blazorise.DataGrid;
+@inject NavigationManager NavManager;
+@inject IJSRuntime JS
+
+
+<DataGrid TItem="Cart"
+          Data="@cosesList"
+          @bind-SelectedRow="@selectedCos"
+          EditMode="editMode"
+          Editable
+          PageSize="5"
+          Filterable
+          Bordered
+          Responsive
+          ShowPager>
+    <DataGridCommandColumn>
+
+    </DataGridCommandColumn>
+    <DataGridColumn Field="@nameof(Cart.numeMedicament)" Caption="nume medicament" Sortable="false" />
+    <DataGridColumn Field="@nameof(Cart.Cantitate)" Caption="Cantitate" Editable />
+</DataGrid>
+<Button Color="Blazorise.Color.Danger" @onclick="EmptyCart">Golire cos</Button>
+<Button Color="Blazorise.Color.Success" @onclick="PrintBon">Elibereaza bon</Button>
+@code {
+    private List<Cart> cosesList;
+    private Cart selectedCos;
+    private DataGridEditMode editMode = DataGridEditMode.Popup;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cosesList = DataAccessService.getCos();
+        await base.OnInitializedAsync();
+    }
+
+    private void EmptyCart(){
+        DataAccessService.EmptyCos();
+        cosesList = new List<Cart>();
+    }
+
+    private async Task PrintBon(){
+        // Create PDF document (to load the existing file, initialize Document object with file's path)
+        Document document = new Document();
+
+        // Add page
+        Aspose.Pdf.Page page = document.Pages.Add();
+
+        // Initializes a new instance of the Table
+        Aspose.Pdf.Table table = new Aspose.Pdf.Table();
+
+        // Set the table border color as LightGray
+        table.Border = new Aspose.Pdf.BorderInfo(Aspose.Pdf.BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
+
+        // Set the border for table cells
+        table.DefaultCellBorder = new Aspose.Pdf.BorderInfo(Aspose.Pdf.BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
+        Aspose.Pdf.Row header = table.Rows.Add();
+        // Add table cells
+        header.Cells.Add("nume");
+        header.Cells.Add("cantitate");
+        header.Cells.Add("pret pe unitate");
+        header.Cells.Add("pret total");
+        // Create a loop to add 10 rows
+        for (int row_count = 1; row_count < cosesList.Count; row_count++)
+        {
+            // Add row to table
+            Aspose.Pdf.Row row = table.Rows.Add();
+            // Add table cells
+            row.Cells.Add(cosesList[row_count].numeMedicament);
+            row.Cells.Add(cosesList[row_count].Cantitate.ToString());
+            row.Cells.Add(cosesList[row_count].pret.ToString());
+            row.Cells.Add((cosesList[row_count].pret * cosesList[row_count].Cantitate).ToString());
+        }
+
+        // Add table to the page
+        page.Paragraphs.Add(table);
+
+        // Save the PDF document
+        string path = @"D:\SQL SERVER\Generated-PDF.pdf";
+        document.Save(path);
+        Byte[] bytes = File.ReadAllBytes(path);
+        String file = Convert.ToBase64String(bytes);
+        await JS.InvokeVoidAsync("downloadPDF", file);
+
+        EmptyCart();
+    }
+}
